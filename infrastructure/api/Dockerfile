@@ -1,6 +1,6 @@
 FROM python:3.12-slim-bookworm
 
-LABEL org.opencontainers.image.source="https://github.com/fhuitelec/junia-isen-examples-api"
+LABEL org.opencontainers.image.source="https://github.com/EnguerrandMQT/terraform-project-DECLEMY_SLOSSE_MARQUANT"
 
 COPY --from=ghcr.io/astral-sh/uv:0.4 /uv /bin/uv
 
