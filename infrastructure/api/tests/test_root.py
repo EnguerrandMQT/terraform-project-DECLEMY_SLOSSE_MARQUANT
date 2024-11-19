@@ -57,3 +57,19 @@ def test_read_quotes(mock_blob_service_client):
     response = client.get("/quotes")
     assert response.status_code == 200
     assert response.json() == {"quotes": ["quote1", "quote2", "quote3"]}
+
+# --- Generic Http Error Tests ---
+
+# Test the unexpected error handling for the /examples endpoint
+def test_read_examples_error():
+    with patch("examples.examples.psycopg2.connect", side_effect=Exception("Database connection failed")):
+        response = client.get("/examples")
+        assert response.status_code == 500
+        assert response.json() == {"detail": "Unexpected error: Database connection failed"}
+
+# Test the unexpected error handling for the /quotes endpoint
+def test_read_quotes_error():
+    with patch("examples.examples.BlobServiceClient.get_container_client", side_effect=Exception("Container not found")):
+        response = client.get("/quotes")
+        assert response.status_code == 500
+        assert response.json() == {"detail": "Unexpected error: Container not found"}
