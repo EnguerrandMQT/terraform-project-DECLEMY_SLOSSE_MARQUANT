@@ -40,16 +40,19 @@ def mock_blob_service_client():
 
 # --- Successful Tests ---
 
+# Test the / endpoint
 def test_read_main():
     response = client.get("/")
     assert response.status_code == 200
     assert response.json() == {"Hello": "World"}
 
+# Test the /examples endpoint
 def test_read_examples(mock_psycopg2_connect):
     response = client.get("/examples")
     assert response.status_code == 200
     assert response.json() == {"examples": [["example1"], ["example2"]]}
 
+# Test the /quotes endpoint
 def test_read_quotes(mock_blob_service_client):
     response = client.get("/quotes")
     assert response.status_code == 200
