@@ -1,0 +1,35 @@
+name: PR Tests
+
+on:
+  # pull_request:
+  #   branches:
+  #     - main
+  push:
+    branches:
+      - feat/github-actions
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ./infrastructure/api/.python-version
+
+    - name: Install Python dependencies
+      run: |
+        pip install ./infrastructure/api/
+
+    - name: Run unit tests
+      run: pytest ./infrastructure/api/tests/test_root.py
+
+    - name: Terraform Init
+      run: terraform -chdir=infrastructure/terraform init
+
+    - name: Terraform Validate
+      run: terraform -chdir=infrastructure/terraform validate
