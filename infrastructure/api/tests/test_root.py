@@ -2,6 +2,8 @@ from fastapi.testclient import TestClient
 from examples.examples import app
 import pytest
 from unittest.mock import patch, MagicMock
+import psycopg2
+from azure.core.exceptions import HttpResponseError
 
 client = TestClient(app)
 
@@ -73,3 +75,30 @@ def test_read_quotes_error():
         response = client.get("/quotes")
         assert response.status_code == 500
         assert response.json() == {"detail": "Unexpected error: Container not found"}
+
+# --- Specific Http Error Tests ---
+
+# Test the database error handling for the /examples endpoint
+def test_read_examples_database_error():
+    with patch("psycopg2.connect", side_effect=psycopg2.OperationalError("Database connection failed")):
+        response = client.get("/examples")
+        assert response.status_code == 500
+        assert response.json() == {"detail": "Database error: Database connection failed"}
+
+# Test the Blob error handling for the /quotes endpoint
+def test_read_quotes_blob_error():
+    with patch("examples.examples.BlobServiceClient") as mock_blob_service_client:
+        mock_blob_service = MagicMock()
+        mock_container_client = MagicMock()
+
+        mock_container_client.download_blob.side_effect = HttpResponseError(
+            "Blob not found",
+            request=None,
+            response=None
+        )
+        mock_blob_service.get_container_client.return_value = mock_container_client
+        mock_blob_service_client.return_value = mock_blob_service
+
+        response = client.get("/quotes")
+        assert response.status_code == 500
+        assert response.json() == {"detail": "Blob error: Blob not found"}
