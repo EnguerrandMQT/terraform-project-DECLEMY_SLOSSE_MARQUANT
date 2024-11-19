@@ -16,11 +16,16 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Read Python version from .python-version  and run tests
+      id: python_version
+      run: |
+        python_version=$(cat infrastructure/api/.python-version)
+        echo "python-version=$python_version" >> $GITHUB_ENV
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: infrastructure/api/.python-version
-
+        python-version: ${{ env.python-version }}
     - name: Install Python dependencies
       run: |
         python -m pip install --upgrade pip
