@@ -36,7 +36,7 @@ jobs:
     - name: Run unit tests
       run: |
         cd infrastructure/api/tests
-        uv run pytest test_root.py
+        uv run pytest test_root.py -v
 
     - name: Check if Terraform directory exists
       id: check_terraform_dir
