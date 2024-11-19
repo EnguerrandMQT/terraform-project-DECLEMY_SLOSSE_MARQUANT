@@ -28,12 +28,14 @@ jobs:
         python-version: ${{ env.python-version }}
     - name: Install Python dependencies
       run: |
+        cd infrastructure/api/
         python -m pip install --upgrade pip
-        pip install infrastructure/api/
-        pip install pytest
+        pip install .[dev]
 
     - name: Run unit tests
-      run: pytest infrastructure/api/tests/test_root.py
+      run: |
+        cd infrastructure/api/tests
+        pytest test_root.py
 
     - name: Terraform Init
       run: terraform -chdir=infrastructure/terraform init
