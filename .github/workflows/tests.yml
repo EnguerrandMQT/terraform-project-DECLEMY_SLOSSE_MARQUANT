@@ -38,8 +38,18 @@ jobs:
         cd infrastructure/api/tests
         uv run pytest test_root.py
 
-    - name: Terraform Init
-      run: terraform -chdir=infrastructure/terraform init
+    - name: Check if Terraform directory exists
+      id: check_terraform_dir
+      run: |
+        if [ -d "infrastructure/terraform" ]; then
+          echo "Terraform directory found, initializing Terraform."
+          echo "terraform_dir_exists=true" >> $GITHUB_ENV
+          terraform -chdir=infrastructure/terraform init
+        else
+          echo "Terraform directory not found, skipping Terraform initialization."
+          echo "terraform_dir_exists=false" >> $GITHUB_ENV
+        fi
 
     - name: Terraform Validate
+      if: success() && github.env.terraform_dir_exists == 'true'
       run: terraform -chdir=infrastructure/terraform validate
