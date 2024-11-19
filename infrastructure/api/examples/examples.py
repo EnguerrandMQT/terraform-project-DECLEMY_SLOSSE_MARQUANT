@@ -34,7 +34,9 @@ def read_examples():
         examples = cur.fetchall()
         return {"examples": examples}
     except psycopg2.OperationalError as error:
-        raise HTTPException(status_code=500, detail=str(error))
+        raise HTTPException(status_code=500, detail=f"Database error: {str(error)}")
+    except Exception as error:
+        raise HTTPException(status_code=500, detail=f"Unexpected error: {str(error)}")
 
 
 def get_environment_variable(key, default=None):
@@ -56,6 +58,8 @@ def read_quotes():
         container_client = blob_service_client.get_container_client(container="api")
         quotes = json.loads(container_client.download_blob("quotes.json").readall())
     except HttpResponseError as error:
-        raise HTTPException(status_code=500, detail=str(error))
+        raise HTTPException(status_code=500, detail=f"Blob error: {str(error)}")
+    except Exception as error:
+        raise HTTPException(status_code=500, detail=f"Unexpected error: {str(error)}")
 
     return {"quotes": quotes}
