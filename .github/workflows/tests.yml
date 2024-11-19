@@ -19,14 +19,15 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: ./infrastructure/api/.python-version
+        python-version: infrastructure/api/.python-version
 
     - name: Install Python dependencies
       run: |
-        pip install ./infrastructure/api/
+        python -m pip install --upgrade pip
+        pip install infrastructure/api/
 
     - name: Run unit tests
-      run: pytest ./infrastructure/api/tests/test_root.py
+      run: pytest infrastructure/api/tests/test_root.py
 
     - name: Terraform Init
       run: terraform -chdir=infrastructure/terraform init
