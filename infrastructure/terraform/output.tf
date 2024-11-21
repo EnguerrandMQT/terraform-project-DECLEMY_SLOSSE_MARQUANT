@@ -20,16 +20,15 @@ output "api" {
 
 output "storage" {
   value = module.api_storage
-  # value = length(module.api_storage) == 0 ? null : {
-  #   url = local.storage_url
-  # }
   description = "URL to access the storage account"
 }
 
 output "principal_id" {
+  description = "Principal ID of the API service"
   value = module.examples_api_service.principal_id
 }
 
 output "gateway_ip" {
+  description = "Public IP address of the API gateway"
   value = module.gateway.public_ip_address
 }
