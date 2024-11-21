@@ -42,3 +42,15 @@ resource "azurerm_postgresql_flexible_server_database" "database" {
   server_id = azurerm_postgresql_flexible_server.playground_computing.id
 }
 
+resource "null_resource" "populate_db" {
+  provisioner "local-exec" {
+    command = <<EOT
+    PGPASSWORD="${var.database_administrator_password}" psql \
+      -h ${azurerm_postgresql_flexible_server.playground_computing.fqdn} \
+      -U ${var.database_administrator_login} \
+      -d ${azurerm_postgresql_flexible_server_database.database.name} \
+      -f ${path.module}/../../../resources/database/script.sql
+    EOT
+  }
+  depends_on = [ azurerm_postgresql_flexible_server.playground_computing ]
+}
