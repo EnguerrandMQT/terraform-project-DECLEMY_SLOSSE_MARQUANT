@@ -1,19 +1,19 @@
-variable "app_name" {
+variable "resource_group_name" {
   type        = string
-  default     = "app_service"
-  description = "Name of the application"
+  nullable = false
+  description = "Name of the resource group within which to create the app service"
 }
 
 variable "location" {
   type        = string
-  default     = "francecentral"
-  description = "Location of the resource group."
+  nullable = false
+  description = "Name of the location where to create the app service"
 }
 
-variable "resource_group_name" {
+variable "app_name" {
   type        = string
-  default     = "terraform-project-DECLEMY_SLOSSE_MARQUANT"
-  description = "Resource group name for the project"
+  default     = null
+  description = "Name of the application"
 }
 
 variable "pricing_plan" {
@@ -47,4 +47,9 @@ variable "app_settings" {
   description = "App service settings (list of environment variables)"
   default = {}
   type = map(string)
+}
+
+variable "gateway_ip" {
+  description = "Adresse IP publique de la passerelle à autoriser"
+  type        = string
 }
