@@ -13,7 +13,7 @@ resource "azurerm_subnet" "subnet" {
 
   service_endpoints = ["Microsoft.Storage"]
   delegation {
-    name = "delegation_to_app_service" # Un nom descriptif
+    name = "delegation_to_app_service"
 
     service_delegation {
       name = "Microsoft.Web/serverFarms"
