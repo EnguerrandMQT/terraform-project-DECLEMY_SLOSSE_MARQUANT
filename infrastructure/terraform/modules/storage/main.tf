@@ -25,11 +25,11 @@ resource "azurerm_role_assignment" "user_binding" {
 }
 
 resource "azurerm_storage_blob" "json_blob" {
-  name                   = "quotes.json" # Nom du fichier dans le conteneur
+  name                   = "quotes.json"
   storage_account_name   = azurerm_storage_account.storage.name
   storage_container_name = azurerm_storage_container.container.name
   type                   = "Block"
-  source                 = "${path.module}/../../../resources/storage/quotes.json" # Chemin vers le fichier local
+  source                 = "${path.module}/../../../resources/storage/quotes.json"
 }
 
 resource "azurerm_storage_account_network_rules" "network_rules" {

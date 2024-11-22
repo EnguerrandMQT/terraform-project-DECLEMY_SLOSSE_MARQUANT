@@ -31,8 +31,8 @@ module "examples_api_service" {
   docker_image        = "enguerrandmqt/terraform-project-declemy_slosse_marquant:main"
   docker_registry_url = "https://ghcr.io"
 
-  gateway_ip          = module.gateway.public_ip_address
-  subnet_id           = module.virtual_network_storage.subnet_id
+  gateway_ip = module.gateway.public_ip_address
+  subnet_id  = module.virtual_network_storage.subnet_id
 
   app_settings = {
     DATABASE_HOST     = local.database_connection.host
@@ -97,7 +97,7 @@ module "gateway" {
   resource_group_name = local.resource_group
   location            = local.location
   public_ip_name      = "ippublique"
-  subnet = module.virtual_network.subnet_id
+  subnet              = module.virtual_network.subnet_id
 
   application_gateway_name = "gateway-dms"
   sku_name                 = "Standard_v2"
