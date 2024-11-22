@@ -22,7 +22,6 @@ locals {
 
 module "examples_api_service" {
   source = "./modules/app_service"
-  #count  = var.enable_api ? 1 : 0
 
   resource_group_name = local.resource_group
   location            = local.location
@@ -51,7 +50,6 @@ module "examples_api_service" {
 
 module "database" {
   source = "./modules/database"
-  #count  = var.enable_database ? 1 : 0
 
   resource_group_name = local.resource_group
   location            = local.location
@@ -78,7 +76,6 @@ locals {
 
 module "api_storage" {
   source = "./modules/storage"
-  #count  = var.enable_storage ? 1 : 0
 
   resource_group_name  = local.resource_group
   location             = local.location
