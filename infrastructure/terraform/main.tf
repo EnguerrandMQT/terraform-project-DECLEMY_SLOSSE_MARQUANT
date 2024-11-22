@@ -33,6 +33,7 @@ module "examples_api_service" {
   docker_registry_url = "https://ghcr.io"
 
   gateway_ip          = module.gateway.public_ip_address
+  subnet_id           = module.virtual_network_storage.subnet_id
 
   app_settings = {
     DATABASE_HOST     = local.database_connection.host
@@ -83,6 +84,7 @@ module "api_storage" {
   location             = local.location
   storage_account_name = local.storage.name
   container_name       = "api"
+  storage_subnet_id    = module.virtual_network_storage.subnet_id
 
   service_principal_id = module.examples_api_service.principal_id
   user_principal_id    = data.azuread_user.user.object_id
@@ -97,10 +99,6 @@ module "gateway" {
 
   resource_group_name = local.resource_group
   location            = local.location
-  # vnet_name           = "Vnet"
-  # vnet_address_space  = ["10.0.0.0/16"]
-  # subnet_name         = "Subnet"
-  # subnet_prefix       = ["10.0.1.0/24"]
   public_ip_name      = "ippublique"
   subnet = module.virtual_network.subnet_id
 
@@ -120,4 +118,15 @@ module "virtual_network" {
   vnet_address_space  = ["10.0.0.0/16"]
   subnet_name         = "Subnet"
   subnet_prefix       = ["10.0.1.0/24"]
+}
+
+module "virtual_network_storage" {
+  source = "./modules/virtual_network_delegation"
+
+  resource_group_name = local.resource_group
+  location            = local.location
+  vnet_name           = "Vnet_storage"
+  vnet_address_space  = ["192.168.0.0/16"]
+  subnet_name         = "Subnet_storage"
+  subnet_prefix       = ["192.168.1.0/24"]
 }

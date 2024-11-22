@@ -35,3 +35,15 @@ resource "azurerm_storage_blob" "json_blob" {
   type                   = "Block"
   source                 = "${path.module}/../../../resources/storage/quotes.json" # Chemin vers le fichier local
 }
+
+resource "azurerm_storage_account_network_rules" "network_rules" {
+  storage_account_id = azurerm_storage_account.storage.id
+
+  default_action = "Deny"
+
+  virtual_network_subnet_ids = [
+    var.storage_subnet_id
+  ]
+
+  depends_on = [azurerm_storage_container.container] # Applique les règles après avoir créé le conteneur
+}

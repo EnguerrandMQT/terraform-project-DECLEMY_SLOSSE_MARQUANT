@@ -33,3 +33,9 @@ variable "service_principal_id" {
   default     = null
   description = "Principal ID of the app service to assign the blob storage reader role to"
 }
+
+variable "storage_subnet_id" {
+  type        = string
+  default     = null
+  description = "ID of subnet for storage"
+}

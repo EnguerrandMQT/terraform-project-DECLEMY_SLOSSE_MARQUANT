@@ -50,6 +50,11 @@ variable "app_settings" {
 }
 
 variable "gateway_ip" {
-  description = "Adresse IP publique de la passerelle à autoriser"
+  description = "IP gateway to authorize access"
+  type        = string
+}
+
+variable "subnet_id" {
+  description = "id of subnet to access storage"
   type        = string
 }
