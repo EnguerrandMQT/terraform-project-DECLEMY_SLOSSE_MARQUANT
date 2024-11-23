@@ -18,12 +18,15 @@ variable "vnet_address_space" {
   type        = list(string)
 }
 
-variable "subnet_name" {
-  description = "Name of the subnet."
-  type        = string
-}
-
-variable "subnet_prefix" {
-  description = "Address prefix for the subnet."
-  type        = list(string)
+variable "subnets" {
+  description = "Configuration des sous-réseaux avec délégations et points de service"
+  type = map(object({
+    subnet_prefix        = string
+    service_endpoints    = optional(list(string), [])
+    delegation = optional(object({
+      name = string
+      service_delegation_name = string
+      actions = list(string)
+    }), null)
+  }))
 }

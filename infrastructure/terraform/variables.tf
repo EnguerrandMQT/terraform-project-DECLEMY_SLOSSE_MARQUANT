@@ -6,7 +6,7 @@ variable "location" {
 
 variable "resource_group_name" {
   type        = string
-  default     = "ressourcegroup-dms"
+  default     = "resourcegroup-dms"
   description = "Name of the resource group in which all resource are grouped"
 }
 

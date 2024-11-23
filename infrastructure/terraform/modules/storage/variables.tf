@@ -39,3 +39,8 @@ variable "storage_subnet_id" {
   default     = null
   description = "ID of subnet for storage"
 }
+
+variable "ip_exception" {
+  type        = string
+  description = "IP to authorize access"
+}

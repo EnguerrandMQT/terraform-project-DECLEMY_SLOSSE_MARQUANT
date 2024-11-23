@@ -63,4 +63,6 @@ resource "azurerm_application_gateway" "gateway" {
   }
 
   enable_http2 = true
+
+  depends_on = [ azurerm_public_ip.public_ip ]
 }

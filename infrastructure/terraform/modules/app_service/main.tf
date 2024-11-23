@@ -13,6 +13,8 @@ resource "azurerm_linux_web_app" "app_service" {
   service_plan_id     = azurerm_service_plan.app_service.id
   app_settings        = var.app_settings
 
+  virtual_network_subnet_id = var.subnet_id
+
   identity {
     type = "SystemAssigned"
   }
@@ -44,9 +46,6 @@ resource "azurerm_linux_web_app" "app_service" {
       }
     }
   }
-}
 
-resource "azurerm_app_service_virtual_network_swift_connection" "vnet_integration" {
-  app_service_id      = azurerm_linux_web_app.app_service.id
-  subnet_id           = var.subnet_id
+  depends_on = [ azurerm_service_plan.app_service ]
 }
