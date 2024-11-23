@@ -32,7 +32,7 @@ module "examples_api_service" {
 
   app_name            = local.app_name
   pricing_plan        = "P0v3"
-  docker_image        = "fhuitelec/examples-api:2.1.0"
+  docker_image        = "enguerrandmqt/terraform-project-declemy_slosse_marquant:main"
   docker_registry_url = "https://ghcr.io"
 
   gateway_ip          = module.gateway.public_ip_address
@@ -104,7 +104,7 @@ module "gateway" {
   resource_group_name = local.resource_group
   location            = local.location
   public_ip_name      = "ippublique"
-  subnet = module.virtual_network_gateway.subnet_ids["subnet_gateway"]
+  subnet              = module.virtual_network_gateway.subnet_ids["subnet_gateway"]
 
   application_gateway_name = "gateway-dms"
   sku_name                 = "Standard_v2"

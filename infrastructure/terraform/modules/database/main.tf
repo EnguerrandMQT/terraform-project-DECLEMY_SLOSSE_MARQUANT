@@ -92,24 +92,15 @@ resource "azurerm_private_dns_a_record" "dns_record" {
   depends_on = [ azurerm_private_dns_zone_virtual_network_link.private_dns_zone_virtual_network_link, azurerm_postgresql_flexible_server.playground_computing ]
 }
 
-# resource "null_resource" "populate_db" {
-#   provisioner "local-exec" {
-#     command = <<EOT
-#     az postgres flexible-server execute -n ${azurerm_postgresql_flexible_server.playground_computing.name} -u ${var.database_administrator_login} -p '${var.database_administrator_password}' -d ${azurerm_postgresql_flexible_server_database.database.name} -f ${path.module}/../../../resources/database/script.sql
-#     EOT
-#   }
-#   depends_on = [ azurerm_postgresql_flexible_server.playground_computing ]
-# }
-
-# resource "null_resource" "populate_db" {
-#   provisioner "local-exec" {
-#     command = <<EOT
-#     PGPASSWORD="${var.database_administrator_password}" psql \
-#       -h ${azurerm_postgresql_flexible_server.playground_computing.fqdn} \
-#       -U ${var.database_administrator_login} \
-#       -d ${azurerm_postgresql_flexible_server_database.database.name} \
-#       -f ${path.module}/../../../resources/database/script.sql
-#     EOT
-#   }
-#   depends_on = [ azurerm_postgresql_flexible_server.playground_computing ]
-# }
+resource "null_resource" "populate_db" {
+  provisioner "local-exec" {
+    command = <<EOT
+    PGPASSWORD="${var.database_administrator_password}" psql \
+      -h ${azurerm_postgresql_flexible_server.playground_computing.fqdn} \
+      -U ${var.database_administrator_login} \
+      -d ${azurerm_postgresql_flexible_server_database.database.name} \
+      -f ${path.module}/../../../resources/database/script.sql
+    EOT
+  }
+  depends_on = [ azurerm_postgresql_flexible_server.playground_computing ]
+}
