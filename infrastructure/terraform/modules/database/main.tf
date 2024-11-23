@@ -6,9 +6,7 @@ resource "azurerm_postgresql_flexible_server" "playground_computing" {
   geo_redundant_backup_enabled  = false
   location                      = var.location
   name                          = var.server_name
-  # delegated_subnet_id           = var.subnet_id     # activer pour l'intégration réseau
-  # private_dns_zone_id           = azurerm_private_dns_zone.private_dns_zone.id  # activer pour l'intégration réseau
-  public_network_access_enabled = true  # mettre à false pour l'intération réseau
+  public_network_access_enabled = true
   resource_group_name           = var.resource_group_name
   sku_name                      = "B_Standard_B1ms"
   storage_tier                  = "P4"
@@ -34,15 +32,13 @@ resource "azurerm_postgresql_flexible_server_active_directory_administrator" "ad
   depends_on = [ azurerm_postgresql_flexible_server.playground_computing ]
 }
 
-# désactiver pour l'intégration réseau
-
 resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_client" {
   name             = "AllowClient"
   server_id        = azurerm_postgresql_flexible_server.playground_computing.id
   start_ip_address = var.ip_exception
   end_ip_address   = var.ip_exception
   
-  depends_on = [ azurerm_postgresql_flexible_server.playground_computing ]
+  depends_on = [ azurerm_postgresql_flexible_server.playground_computing, azurerm_postgresql_flexible_server_active_directory_administrator.administrator, azurerm_postgresql_flexible_server_database.database ]
 }
 
 resource "azurerm_postgresql_flexible_server_database" "database" {

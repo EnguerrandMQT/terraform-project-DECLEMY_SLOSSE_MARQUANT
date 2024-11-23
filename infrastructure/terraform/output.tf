@@ -11,7 +11,7 @@ output "database" {
   description = "Database connection information"
 }
 
-output "api" {
+output "app_service" {
   value = length(module.examples_api_service) == 0 ? null : {
     url = module.examples_api_service.url
   }
@@ -23,9 +23,9 @@ output "storage" {
   description = "URL to access the storage account"
 }
 
-output "gateway_ip" {
+output "api" {
   description = "Public IP address of the API gateway"
-  value = module.gateway.public_ip_address
+  value = module.gateway.gateway_dns_name
 }
 
 # output "ip" {
