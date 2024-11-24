@@ -21,7 +21,7 @@ locals {
 }
 
 data "http" "ip" {
-  url = "https://ifconfig.me/ip"
+  url = "https://api.ipify.org"
 }
 
 module "examples_api_service" {
@@ -35,8 +35,8 @@ module "examples_api_service" {
   docker_image        = "enguerrandmqt/terraform-project-declemy_slosse_marquant:main"
   docker_registry_url = "https://ghcr.io"
 
-  gateway_ip          = module.gateway.public_ip_address
-  subnet_id           = module.virtual_network_storage.subnet_ids["Subnet_app_service"]
+  gateway_ip = module.gateway.public_ip_address
+  subnet_id  = module.virtual_network_storage.subnet_ids["Subnet_app_service"]
 
   app_settings = {
     DATABASE_HOST     = local.database_connection.host
@@ -49,6 +49,11 @@ module "examples_api_service" {
 
     NEW_RELIC_LICENSE_KEY = var.new_relic_licence_key
     NEW_RELIC_APP_NAME    = local.app_name
+
+    docker_registry_url      = "https://ghcr.io"
+    docker_registry_username = "EnguerrandMQT"
+    docker_registry_password = var.docker_registry_server_password
+
   }
 }
 
@@ -69,8 +74,8 @@ module "database" {
   database_name                   = local.database.name
 
   virtual_network_id = module.virtual_network_storage.id
-  subnet_id = module.virtual_network_storage.subnet_ids["Subnet_db"]
-  ip_exception         = data.http.ip.response_body
+  subnet_id          = module.virtual_network_storage.subnet_ids["Subnet_db"]
+  ip_exception       = data.http.ip.response_body
 }
 
 locals {
@@ -105,6 +110,7 @@ module "gateway" {
   location            = local.location
   public_ip_name      = "ippublique"
   subnet              = module.virtual_network_gateway.subnet_ids["subnet_gateway"]
+  domain_name_label   = var.domain_name_label
 
   application_gateway_name = "gateway-dms"
   sku_name                 = "Standard_v2"
@@ -123,8 +129,8 @@ module "virtual_network_gateway" {
 
   subnets = {
     subnet_gateway = {
-      subnet_prefix       = "10.0.1.0/24"
-      delegation          = null
+      subnet_prefix = "10.0.1.0/24"
+      delegation    = null
     }
   }
 }
@@ -139,8 +145,8 @@ module "virtual_network_storage" {
 
   subnets = {
     Subnet_app_service = {
-      subnet_prefix       = "192.168.1.0/24"
-      service_endpoints   = ["Microsoft.Storage"]
+      subnet_prefix     = "192.168.1.0/24"
+      service_endpoints = ["Microsoft.Storage"]
       delegation = {
         name                    = "delegation_to_app_service"
         service_delegation_name = "Microsoft.Web/serverFarms"
@@ -148,8 +154,8 @@ module "virtual_network_storage" {
       }
     }
     Subnet_db = {
-      subnet_prefix       = "192.168.2.0/24"
-      delegation          = null
+      subnet_prefix = "192.168.2.0/24"
+      delegation    = null
     }
   }
 }
