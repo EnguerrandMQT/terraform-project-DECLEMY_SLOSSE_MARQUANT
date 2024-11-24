@@ -22,7 +22,7 @@ This stack is deploying on **Azure**:
 * A private DNS zone
 
 The following image shows the architecture of the stack:
-[![Architecture]](./architecture.png)
+![Architecture](./architecture.png)
 
 This repository is also using Github Actions workflow to:
 * Build and deploy a GithHub Container Registry
