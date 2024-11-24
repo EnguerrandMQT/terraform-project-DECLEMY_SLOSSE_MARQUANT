@@ -33,7 +33,7 @@ env:
 
 on:
   push:
-    branches: [ "main", "feat/github-actions" ]
+    branches: [ "main" ]
   workflow_dispatch:
 
 permissions:
