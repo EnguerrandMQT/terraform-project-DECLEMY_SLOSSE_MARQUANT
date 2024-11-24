@@ -81,7 +81,7 @@ $ terraform apply
 
 | Name | Type |
 |------|------|
-| [azurerm_resource_group.ressourcegroup-dms](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) | resource |
+| [azurerm_resource_group.resourcegroup-dms](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) | resource |
 | [random_password.database_password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
 | [azuread_user.user](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/data-sources/user) | data source |
 | [azurerm_subscription.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/subscription) | data source |
@@ -99,7 +99,7 @@ $ terraform apply
 | <a name="input_github_handle"></a> [github\_handle](#input\_github\_handle) | Your GitHub username (not your email, your @username) | `string` | n/a | yes |
 | <a name="input_location"></a> [location](#input\_location) | Location of the resources | `string` | `"francecentral"` | no |
 | <a name="input_new_relic_licence_key"></a> [new\_relic\_licence\_key](#input\_new\_relic\_licence\_key) | New relic licence key used by the app service container to publish logs & metrics.<br/><br/>See documentation https://docs.newrelic.com/docs/apis/intro-apis/new-relic-api-keys/<br/><br/>To retrieve it, go to https://send.bitwarden.com/#bX2ytcWjUUSvJrIAAXayPA/RVbs3obbFkjeybNQuzrBCw<br/>The Bitwarden password will be displayed in class. | `string` | `null` | no |
-| <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name) | Name of the resource group in which all resource are grouped | `string` | `"ressourcegroup-dms"` | no |
+| <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name) | Name of the resource group in which all resource are grouped | `string` | `"resourcegroup-dms"` | no |
 | <a name="input_storage_name"></a> [storage\_name](#input\_storage\_name) | Name of the storage account | `string` | `null` | no |
 | <a name="input_subscription_id"></a> [subscription\_id](#input\_subscription\_id) | Your Azure subscription ID<br/><br/>To retrieve it:<br/>az login --use-device-code<br/>az account show --query='id' --output=tsv | `string` | n/a | yes |
 

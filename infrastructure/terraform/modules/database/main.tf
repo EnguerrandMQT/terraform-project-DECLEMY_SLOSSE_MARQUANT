@@ -28,29 +28,88 @@ resource "azurerm_postgresql_flexible_server_active_directory_administrator" "ad
   principal_type      = var.entra_administrator_principal_type
   object_id           = var.entra_administrator_object_id
   principal_name      = var.entra_administrator_principal_name
+
+  depends_on = [azurerm_postgresql_flexible_server.playground_computing]
 }
 
-resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_all" {
-  name             = "AllowAll"
+resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_client" {
+  name             = "AllowClient"
   server_id        = azurerm_postgresql_flexible_server.playground_computing.id
-  start_ip_address = "0.0.0.0"
-  end_ip_address   = "255.255.255.255"
+  start_ip_address = var.ip_exception
+  end_ip_address   = var.ip_exception
+
+  depends_on = [
+    azurerm_postgresql_flexible_server.playground_computing,
+    azurerm_postgresql_flexible_server_active_directory_administrator.administrator,
+    azurerm_postgresql_flexible_server_database.database
+  ]
 }
 
 resource "azurerm_postgresql_flexible_server_database" "database" {
   name      = var.database_name
   server_id = azurerm_postgresql_flexible_server.playground_computing.id
+
+  depends_on = [azurerm_postgresql_flexible_server.playground_computing]
 }
 
+resource "azurerm_private_endpoint" "private_endpoint" {
+  name                = "endpoint-db"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  subnet_id           = var.subnet_id
+
+  private_service_connection {
+    name                           = "db-connection"
+    private_connection_resource_id = azurerm_postgresql_flexible_server.playground_computing.id
+    subresource_names              = ["postgresqlServer"]
+    is_manual_connection           = false
+  }
+
+  depends_on = [azurerm_postgresql_flexible_server.playground_computing]
+}
+
+resource "azurerm_private_dns_zone" "private_dns_zone" {
+  name                = "postgres.database.azure.com"
+  resource_group_name = var.resource_group_name
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "private_dns_zone_virtual_network_link" {
+  name                  = "postgre-dns-link"
+  private_dns_zone_name = azurerm_private_dns_zone.private_dns_zone.name
+  virtual_network_id    = var.virtual_network_id
+  resource_group_name   = var.resource_group_name
+
+  depends_on = [azurerm_private_dns_zone.private_dns_zone]
+}
+
+resource "azurerm_private_dns_a_record" "dns_record" {
+  name                = azurerm_postgresql_flexible_server.playground_computing.name
+  zone_name           = azurerm_private_dns_zone.private_dns_zone.name
+  resource_group_name = var.resource_group_name
+  ttl                 = 10
+  records             = [azurerm_private_endpoint.private_endpoint.private_service_connection[0].private_ip_address]
+
+  depends_on = [
+    azurerm_private_dns_zone_virtual_network_link.private_dns_zone_virtual_network_link,
+    azurerm_postgresql_flexible_server.playground_computing
+  ]
+}
+
+## inject the script.sql file into the database
 resource "null_resource" "populate_db" {
   provisioner "local-exec" {
+    on_failure = fail
+    environment = {
+      "PGPASSWORD" = "${var.database_administrator_password}"
+    }
     command = <<EOT
-    PGPASSWORD="${var.database_administrator_password}" psql \
-      -h ${azurerm_postgresql_flexible_server.playground_computing.fqdn} \
-      -U ${var.database_administrator_login} \
-      -d ${azurerm_postgresql_flexible_server_database.database.name} \
-      -f ${path.module}/../../../resources/database/script.sql
+      psql -h ${azurerm_postgresql_flexible_server.playground_computing.fqdn} -U ${var.database_administrator_login} -d ${azurerm_postgresql_flexible_server_database.database.name} -f ${path.module}/../../../resources/database/script.sql
     EOT
   }
-  depends_on = [ azurerm_postgresql_flexible_server.playground_computing ]
+  depends_on = [
+    azurerm_postgresql_flexible_server.playground_computing,
+    azurerm_postgresql_flexible_server_database.database,
+    azurerm_postgresql_flexible_server_active_directory_administrator.administrator,
+    azurerm_postgresql_flexible_server_firewall_rule.allow_client
+  ]
 }

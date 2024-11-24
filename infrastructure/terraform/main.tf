@@ -9,15 +9,19 @@ data "github_user" "user" {
   username = var.github_handle
 }
 
-resource "azurerm_resource_group" "ressourcegroup-dms" {
+resource "azurerm_resource_group" "resourcegroup-dms" {
   name     = var.resource_group_name
   location = var.location
 }
 
 locals {
-  resource_group = azurerm_resource_group.ressourcegroup-dms.name
-  location       = azurerm_resource_group.ressourcegroup-dms.location
+  resource_group = azurerm_resource_group.resourcegroup-dms.name
+  location       = azurerm_resource_group.resourcegroup-dms.location
   app_name       = "app-service-dms"
+}
+
+data "http" "ip" {
+  url = "https://api.ipify.org"
 }
 
 module "examples_api_service" {
@@ -32,7 +36,7 @@ module "examples_api_service" {
   docker_registry_url = "https://ghcr.io"
 
   gateway_ip = module.gateway.public_ip_address
-  subnet_id  = module.virtual_network_storage.subnet_id
+  subnet_id  = module.virtual_network_storage.subnet_ids["Subnet_app_service"]
 
   app_settings = {
     DATABASE_HOST     = local.database_connection.host
@@ -45,6 +49,11 @@ module "examples_api_service" {
 
     NEW_RELIC_LICENSE_KEY = var.new_relic_licence_key
     NEW_RELIC_APP_NAME    = local.app_name
+
+    docker_registry_url      = "https://ghcr.io"
+    docker_registry_username = "EnguerrandMQT"
+    docker_registry_password = var.docker_registry_server_password
+
   }
 }
 
@@ -63,13 +72,15 @@ module "database" {
   database_administrator_login    = local.database.username
   database_administrator_password = local.database.password
   database_name                   = local.database.name
+
+  virtual_network_id = module.virtual_network_storage.id
+  subnet_id          = module.virtual_network_storage.subnet_ids["Subnet_db"]
+  ip_exception       = data.http.ip.response_body
 }
 
 locals {
   database_connection = {
-    # host = try(module.database[0].server_address, null)
     host = module.database.server_address
-    # port = try(module.database[0].port, null)
     port = module.database.port
   }
 }
@@ -81,7 +92,8 @@ module "api_storage" {
   location             = local.location
   storage_account_name = local.storage.name
   container_name       = "api"
-  storage_subnet_id    = module.virtual_network_storage.subnet_id
+  storage_subnet_id    = module.virtual_network_storage.subnet_ids["Subnet_app_service"]
+  ip_exception         = data.http.ip.response_body
 
   service_principal_id = module.examples_api_service.principal_id
   user_principal_id    = data.azuread_user.user.object_id
@@ -97,7 +109,8 @@ module "gateway" {
   resource_group_name = local.resource_group
   location            = local.location
   public_ip_name      = "ippublique"
-  subnet              = module.virtual_network.subnet_id
+  subnet              = module.virtual_network_gateway.subnet_ids["subnet_gateway"]
+  domain_name_label   = var.domain_name_label
 
   application_gateway_name = "gateway-dms"
   sku_name                 = "Standard_v2"
@@ -106,24 +119,43 @@ module "gateway" {
   backend_fqdn             = "${local.app_name}.azurewebsites.net"
 }
 
-module "virtual_network" {
+module "virtual_network_gateway" {
   source = "./modules/virtual_network"
 
   resource_group_name = local.resource_group
   location            = local.location
   vnet_name           = "Vnet"
   vnet_address_space  = ["10.0.0.0/16"]
-  subnet_name         = "Subnet"
-  subnet_prefix       = ["10.0.1.0/24"]
+
+  subnets = {
+    subnet_gateway = {
+      subnet_prefix = "10.0.1.0/24"
+      delegation    = null
+    }
+  }
 }
 
 module "virtual_network_storage" {
-  source = "./modules/virtual_network_delegation"
+  source = "./modules/virtual_network"
 
   resource_group_name = local.resource_group
   location            = local.location
   vnet_name           = "Vnet_storage"
   vnet_address_space  = ["192.168.0.0/16"]
-  subnet_name         = "Subnet_storage"
-  subnet_prefix       = ["192.168.1.0/24"]
+
+  subnets = {
+    Subnet_app_service = {
+      subnet_prefix     = "192.168.1.0/24"
+      service_endpoints = ["Microsoft.Storage"]
+      delegation = {
+        name                    = "delegation_to_app_service"
+        service_delegation_name = "Microsoft.Web/serverFarms"
+        actions                 = ["Microsoft.Network/virtualNetworks/subnets/action"]
+      }
+    }
+    Subnet_db = {
+      subnet_prefix = "192.168.2.0/24"
+      delegation    = null
+    }
+  }
 }

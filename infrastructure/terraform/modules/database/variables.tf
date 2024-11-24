@@ -64,3 +64,20 @@ variable "database_name" {
   nullable = false
   description = "Name for the database within the server"
 }
+
+variable "virtual_network_id" {
+  type = string
+  nullable = false
+  description = "ID of the virtual network"
+}
+
+variable "subnet_id" {
+  type = string
+  nullable = false
+  description = "ID of the subnet"
+}
+
+variable "ip_exception" {
+  type        = string
+  description = "IP to authorize access"
+}

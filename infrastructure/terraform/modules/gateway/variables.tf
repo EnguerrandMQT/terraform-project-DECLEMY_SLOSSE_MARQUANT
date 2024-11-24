@@ -45,3 +45,8 @@ variable "backend_fqdn" {
   description = "FQDN for the backend pool."
   type        = string
 }
+
+variable "domain_name_label" {
+  description = "Domain name label for the public IP."
+  type        = string 
+}
