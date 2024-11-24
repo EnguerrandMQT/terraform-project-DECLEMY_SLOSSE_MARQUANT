@@ -2,8 +2,7 @@ name: PR Tests
 
 on:
   pull_request:
-    branches:
-      - main
+    branches: [ "main", "feat/github-actions" ]
 
 jobs:
   test:
@@ -38,7 +37,7 @@ jobs:
     - name: Check if Terraform directory exists
       id: check_terraform_dir
       run: |
-        if [ -d "infrastructure/terraform" ]; then
+        if [ -d "infrastructure/terraform" ]; then #what is the -d flag?
           echo "Terraform directory found, initializing Terraform."
           echo "terraform_dir_exists=true" >> $GITHUB_ENV
           terraform -chdir=infrastructure/terraform init
@@ -48,5 +47,5 @@ jobs:
         fi
 
     - name: Terraform Validate
-      if: success() && github.env.terraform_dir_exists == 'true'
+      if: github.env.terraform_dir_exists == 'true'
       run: terraform -chdir=infrastructure/terraform validate
