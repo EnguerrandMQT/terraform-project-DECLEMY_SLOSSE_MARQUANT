@@ -40,3 +40,6 @@ terraform.rc
 sandbox
 
 terraform.tfvars
+
+# Ignore Visual Studio Code settings
+.vscode/

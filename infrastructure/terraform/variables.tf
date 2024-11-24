@@ -10,6 +10,12 @@ variable "resource_group_name" {
   description = "Name of the resource group in which all resource are grouped"
 }
 
+variable "domain_name_label" {
+  type        = string
+  default     = "dms-api"
+  description = "Label of the domain name"
+  
+}
 
 ############
 # Identity #
@@ -40,6 +46,12 @@ variable "email_address" {
   description = "Your JUNIA email address. Example: firstname.lastname@*.junia.com"
 }
 
+variable "docker_registry_server_password" {
+  type = string
+  sensitive = true
+  description = "Password to connect to the Docker registry"
+  default = null
+}
 
 ############
 # Database #
@@ -112,7 +124,6 @@ variable "storage_name" {
   default     = null
   description = "Name of the storage account"
 }
-
 
 ##########
 # Locals #
