@@ -36,18 +36,7 @@ jobs:
         cd infrastructure/api/tests
         uv run pytest test_root.py -v
 
-    - name: Check if Terraform directory exists
-      id: check_terraform_dir
+    - name: Run Terraform validation
       run: |
-        if [ -d "infrastructure/terraform" ]; then #what is the -d flag?
-          echo "Terraform directory found, initializing Terraform."
-          echo "terraform_dir_exists=true" >> $GITHUB_ENV
-          terraform -chdir=infrastructure/terraform init
-        else
-          echo "Terraform directory not found, skipping Terraform initialization."
-          echo "terraform_dir_exists=false" >> $GITHUB_ENV
-        fi
-
-    - name: Terraform Validate
-      if: github.env.terraform_dir_exists == 'true'
-      run: terraform -chdir=infrastructure/terraform validate
+      terraform -chdir=infrastructure/terraform init
+      terraform -chdir=infrastructure/terraform validate
