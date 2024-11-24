@@ -38,5 +38,5 @@ jobs:
 
     - name: Run Terraform validation
       run: |
-      terraform -chdir=infrastructure/terraform init
-      terraform -chdir=infrastructure/terraform validate
+        terraform -chdir=infrastructure/terraform init
+        terraform -chdir=infrastructure/terraform validate
