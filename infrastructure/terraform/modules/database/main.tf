@@ -109,6 +109,7 @@ resource "null_resource" "populate_db" {
   depends_on = [
     azurerm_postgresql_flexible_server.playground_computing,
     azurerm_postgresql_flexible_server_database.database,
-    azurerm_postgresql_flexible_server_active_directory_administrator.administrator
+    azurerm_postgresql_flexible_server_active_directory_administrator.administrator,
+    azurerm_postgresql_flexible_server_firewall_rule.allow_client
   ]
 }
