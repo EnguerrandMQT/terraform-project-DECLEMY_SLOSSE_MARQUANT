@@ -29,6 +29,9 @@ output "storage" {
 }
 
 output "api" {
-  description = "Public IP address of the API gateway"
-  value       = module.gateway.gateway_dns_name
+  description = "URL to access the API"
+  value       = {
+    description = "URL to access the API",
+    url         = "http://${module.gateway.gateway_dns_name}"
+    }
 }
