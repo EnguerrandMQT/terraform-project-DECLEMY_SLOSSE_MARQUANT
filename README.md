@@ -47,7 +47,7 @@ Then you need to install the Azure CLI for [Linux](https://learn.microsoft.com/e
 
 Connect to your azure account with the command `az login`.
 
-The `plan` and `apply` Terrafom commands have to be launched locally.
+The `plan` and `apply` Terrafom commands have to be launched locally and in the terraform folder (*/infrastructure/terraform*).
 
 You can create a file `terraform.tfvars` in the terraform folder to avoid filling the prompt each time you apply.
 
@@ -72,6 +72,7 @@ docker_registry_server_password = "ghp_xx"
 Summary of the commands to run:
 ```shell
 $ az login
+$ cd infrastructure/terraform
 $ terraform init
 $ terraform plan
 $ terraform apply
@@ -183,3 +184,5 @@ terraform/
 ## Development details
 
 We use the [terraform-docs](https://github.com/terraform-docs/terraform-docs/) to generate the terraform documentation.
+
+We made the choice to not delete the branches after merging the pull request. This way, you can see in detail the changes made in each branch.
